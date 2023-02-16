@@ -11,15 +11,15 @@ class StaticURLTests(TestCase):
         super().setUpClass()
         cls.author = User.objects.create(username='Author')
         cls.group = Group.objects.create(
-            title ='No',
-            slug = 'No',
-            description = 'No'
+            title='No',
+            slug='No',
+            description='No'
         )
         cls.post = Post.objects.create(
-            id = 1,
-            text = 'Тестовый текст',
-            author = cls.author,
-            group = cls.group
+            id=1,
+            text='Тестовый текст',
+            author=cls.author,
+            group=cls.group
         )
 
     def setUp(self):
@@ -53,12 +53,8 @@ class StaticURLTests(TestCase):
                 response = self.authorized_client.get(address)
                 self.assertTemplateUsed(response, 'posts/create_post.html')
 
-                
         elif response.user == self.post.author:
             address = '/posts/<post_id>/edit/'
             with self.subTest(address=address):
                 response = self.user.get(address)
                 self.assertTemplateUsed(response, 'posts/create_post.html')
-
-
-

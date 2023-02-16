@@ -16,12 +16,12 @@ class Group(models.Model):
 class Post(models.Model):
     text = models.TextField(
         'Tекст поста',
-        help_text = 'Введите текст поста'
+        help_text='Введите текст поста'
     )
     pub_date = models.DateTimeField(
         'Дата публикации',
         auto_now_add=True
-        )
+    )
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -33,10 +33,9 @@ class Post(models.Model):
                               blank=True,
                               null=True,
                               related_name='posts',
-                              verbose_name = 'Группа',
-                              help_text = f'Группа, к которой будет'
-                                          f' относиться пост'
-                              )
+                              verbose_name='Группа',
+                              help_text='Группа, к которой будет'
+                                        ' относиться пост',)
 
     class Meta:
         ordering = ('-pub_date',)
