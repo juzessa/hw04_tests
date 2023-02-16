@@ -1,12 +1,10 @@
 from django import forms
-from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from django.test import Client, TestCase
 from django.urls import reverse
+
 from posts.constants import FIRST_TEN
 from posts.models import Group, Post, User
-
-User = get_user_model()
 
 
 class PostViewsTests(TestCase):
@@ -21,14 +19,15 @@ class PostViewsTests(TestCase):
                                           slug='test2',
                                           description='test2',)
         cls.author = User.objects.create(username='Author')
+        
+        bulk_list = []
         for i in range(1, FIRST_TEN + 2):
-
-            Post.objects.create(
-                id=i,
+            bulk_list.append(Post(
                 text='Тест' + str(i),
                 author=cls.author,
                 group=cls.group
-            )
+            ))
+        cls.posts = Post.objects.bulk_create(bulk_list)
 
     def setUp(self):
         self.guest_client = Client()

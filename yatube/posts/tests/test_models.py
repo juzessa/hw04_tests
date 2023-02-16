@@ -1,8 +1,7 @@
-from django.contrib.auth import get_user_model
 from django.test import TestCase
-from posts.models import Group, Post
+from mixer.backend.django import mixer
 
-User = get_user_model()
+from posts.models import Group, Post, User
 
 
 class PostModelTest(TestCase):
@@ -10,19 +9,15 @@ class PostModelTest(TestCase):
     def setUpClass(cls) -> None:
         super().setUpClass()
         cls.user = User.objects.create_user(username='auth')
-        cls.group = Group.objects.create(
-            title='Some group',
-            slug='Some slug',
-            description='Some description',
-        )
+        cls.group = mixer.blend(Group)
         cls.post = Post.objects.create(
             text='Hello, subsribers',
             author=cls.user,
         )
 
     def test_object_name_is_correct(self):
-        post = PostModelTest.post
-        group = PostModelTest.group
+        post = self.post
+        group = self.group
         expected_object_name_post = post.text[:15]
         expected_object_name_group = group.title
         self.assertEqual(expected_object_name_post, str(post))

@@ -1,8 +1,8 @@
-from django.contrib.auth import get_user_model
-from django.test import Client, TestCase
-from posts.models import Group, Post, User
+from http import HTTPStatus
 
-User = get_user_model()
+from django.test import Client, TestCase
+
+from posts.models import Group, Post, User
 
 
 class StaticURLTests(TestCase):
@@ -16,21 +16,20 @@ class StaticURLTests(TestCase):
             description='No'
         )
         cls.post = Post.objects.create(
-            id=1,
             text='Тестовый текст',
             author=cls.author,
             group=cls.group
         )
 
     def setUp(self):
-        self.guest_client = Client()
+        self.anon = Client()
         self.user = User.objects.create_user(username='NoName')
-        self.authorized_client = Client()
-        self.authorized_client.force_login(self.user)
+        self.auth = Client()
+        self.auth.force_login(self.user)
 
     def test_homepage(self):
-        response = self.guest_client.get('/')
-        self.assertEqual(response.status_code, 200)
+        response = self.anon.get('/')
+        self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_urls_use_correct_template(self):
         template_url_names = {
@@ -40,17 +39,17 @@ class StaticURLTests(TestCase):
             f'/posts/{self.post.id}/': 'posts/post_detail.html'
         }
 
-        if self.guest_client:
+        if self.anon:
             for address, template in template_url_names.items():
                 with self.subTest(address=address):
-                    if self.guest_client:
-                        response = self.guest_client.get(address)
+                    if self.anon:
+                        response = self.anon.get(address)
                         self.assertTemplateUsed(response, template)
 
-        elif self.authorized_client:
+        elif self.auth:
             address = '/create/'
             with self.subTest(address=address):
-                response = self.authorized_client.get(address)
+                response = self.auth.get(address)
                 self.assertTemplateUsed(response, 'posts/create_post.html')
 
         elif response.user == self.post.author:

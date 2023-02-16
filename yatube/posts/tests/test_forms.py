@@ -1,10 +1,7 @@
-from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
-from posts.forms import PostForm
-from posts.models import Group, Post, User
 
-User = get_user_model()
+from posts.models import Group, Post, User
 
 
 class PostCreateFormTests(TestCase):
@@ -12,38 +9,41 @@ class PostCreateFormTests(TestCase):
     def setUpClass(cls) -> None:
         super().setUpClass()
         cls.author = User.objects.create(username='Author')
-        cls.group = Group.objects.create(title='Test',
-                                         slug='test',
-                                         description='test',)
-        cls.post = Post.objects.create(id=1,
-                                       text='Тест1',
-                                       author=cls.author,
-                                       group=cls.group,)
-        cls.form = PostForm()
-
-    def setUp(self):
-        self.user = User.objects.create_user(username='Test')
-        self.authorized_client = Client()
-        self.authorized_client.force_login(self.user)
+        cls.post = Post.objects.create(text='Тест1',
+                                       author=cls.author,)
+        cls.user = User.objects.create_user(username='Test')
+        cls.authorized_client = Client()
+        cls.authorized_client.force_login(cls.user)
 
     def test_create_post(self):
-        posts_count = Post.objects.count()
-        form_data = {
-            'text': 'Что-то такое',
-            'group': self.group.id
-        }
+        group = Group.objects.create(title='Test',
+                                         slug='test',
+                                         description='test',)
         self.authorized_client.post(
             reverse('posts:post_create'),
-            data=form_data,
+            data= {
+            'text': 'Что-то такое',
+            'group': group.id
+        },
             follow=True
         )
-        self.assertEqual(Post.objects.count(), posts_count + 1)
+        self.assertTrue(
+            Post.objects.filter(
+                text='Что-то такое',
+                group=group.id
+                ).exists()
+            )
 
     def test_edit_post(self):
-        self.post.text = self.post.text + 'new'
+        post = Post.objects.create(text='Тест1',
+                                       author=self.author,)
+        group = Group.objects.create(title='Test',
+                                         slug='test',
+                                         description='test',)
+        self.post.text = post.text + 'new'
         form_data = {
-            'text': self.post.text,
-            'group': self.group.id
+            'text': post.text,
+            'group': group.id
         }
 
         self.authorized_client.post(
