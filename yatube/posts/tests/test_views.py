@@ -19,7 +19,7 @@ class PostViewsTests(TestCase):
                                           slug='test2',
                                           description='test2',)
         cls.author = User.objects.create(username='Author')
-        
+
         bulk_list = []
         for i in range(1, FIRST_TEN + 2):
             bulk_list.append(Post(
