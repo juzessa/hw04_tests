@@ -15,16 +15,18 @@ class PostModelTest(TestCase):
             author=cls.user,
         )
 
-    def test_object_name_is_correct(self):
+    def test_object_name_post_is_correct(self):
         post = self.post
-        group = self.group
         expected_object_name_post = post.text[:15]
-        expected_object_name_group = group.title
         self.assertEqual(expected_object_name_post, str(post))
+
+    def test_object_name_group_is_correct(self):
+        group = self.group
+        expected_object_name_group = group.title
         self.assertEqual(expected_object_name_group, str(group))
 
     def test_verbose_name_is_correct(self):
-        post = PostModelTest.post
+        post = self.post
         verbose_names = {
             'text': 'Tекст поста',
             'pub_date': 'Дата публикации',
@@ -39,7 +41,7 @@ class PostModelTest(TestCase):
                 )
 
     def test_help_text_is_correct(self):
-        post = PostModelTest.post
+        post = self.post
         fields_help_texts = {
             'text': 'Введите текст поста',
             'group': 'Группа, к которой будет относиться пост'

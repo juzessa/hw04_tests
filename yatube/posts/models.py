@@ -28,6 +28,12 @@ class Post(models.Model):
         verbose_name='Автор',
         related_name='posts')
 
+    image = models.ImageField(
+        'Картинка',
+        upload_to='posts/',
+        blank=True
+    )
+
     group = models.ForeignKey(Group,
                               on_delete=models.SET_NULL,
                               blank=True,

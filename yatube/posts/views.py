@@ -39,7 +39,8 @@ def post_detail(request, post_id):
 @login_required
 def post_create(request):
     if request.method == 'POST':
-        form = PostForm(request.POST or None)
+        form = PostForm(request.POST or None,
+                        files=request.FILES or None)
 
         if form.is_valid():
             new_post = form.save(commit=False)
@@ -61,7 +62,9 @@ def post_edit(request, post_id):
     groups = Group.objects.all()
 
     if request.user == post.author:
-        form = PostForm(request.POST or None, instance=post)
+        form = PostForm(request.POST or None,
+                        files=request.FILES or None,
+                        instance=post)
 
         if form.is_valid():
             post = form.save()
